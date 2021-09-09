@@ -1,25 +1,60 @@
-import logo from './logo.svg';
-import './App.css';
+import tw from 'twin.macro'
+import styled from 'styled-components'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+
+// Components & Pages
+import { Topbar, Sidebar } from './components/index'
+import {
+  Home,
+  UserList,
+  User,
+  NewUser,
+  ProductList,
+  Product,
+  NewProduct,
+} from './Pages/index'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Router>
+      <Topbar />
+      <BodyContainer>
+        <Sidebar />
+        <Switch>
+          <Route path='/' exact>
+            <Home />
+          </Route>
+          <Route path='/users' exact>
+            <UserList />
+          </Route>
+          <Route path='/user/:id' exact>
+            <User />
+          </Route>
+          <Route path='/newUser' exact>
+            <NewUser />
+          </Route>
+          <Route path='/products' exact>
+            <ProductList />
+          </Route>
+          <Route path='/product/:id' exact>
+            <Product />
+          </Route>
+          <Route path='/newProduct' exact>
+            <NewProduct />
+          </Route>
+        </Switch>
+      </BodyContainer>
+    </Router>
+  )
 }
 
-export default App;
+const BodyContainer = styled.div`
+  ${tw`
+    h-screen
+    w-screen
+    flex
+    bg-gray-100
+  `}
+`
+
+export default App
