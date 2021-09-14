@@ -1,21 +1,79 @@
-import React from 'react'
+import React, { useState, useContext } from 'react'
 import tw from 'twin.macro'
 import styled from 'styled-components'
 import { useHistory } from 'react-router-dom'
+import storage from '../../firebase'
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { UserContext } from '../../context/UserContext/UserContext'
+import { createUser } from '../../context/UserContext/ApiCall'
 
 //Icons
 import { ArrowBackIos } from '@material-ui/icons'
 
 const NewUser = () => {
   const history = useHistory()
+  const [username, setUsername] = useState(null)
+  const [password, setPassword] = useState(null)
+  const [email, setEmail] = useState(null)
+  const [profilePic, setProfilePic] = useState(null)
+  const [user, setUser] = useState(null)
+  const [uploaded, setUploaded] = useState(0)
+  const { dispatch } = useContext(UserContext)
 
   const handleBack = () => {
     history.goBack()
   }
 
+  const handleChange = (e) => {
+    const value = e.target.value
+    setUser({ ...user, [e.target.name]: value })
+  }
+
+  const uploadAllFile = (items) => {
+    items.forEach((item) => {
+      const fileName = new Date().getTime() + item.label + item.file.name
+      const storageRef = ref(storage, `/users/${fileName}`)
+      const uploadTask = uploadBytesResumable(storageRef, item.file)
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          console.log('Upload is ' + progress + '% done')
+        },
+        (error) => {
+          console.log(error)
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            setUser((prev) => {
+              return { ...prev, [item.label]: url }
+            })
+            setUploaded((prev) => prev + 1)
+          })
+        }
+      )
+    })
+  }
+
+  const handleUpload = (e) => {
+    console.log('Upload click')
+    e.preventDefault()
+    uploadAllFile([{ file: profilePic, label: 'profilePic' }])
+  }
+
+  const handleCreate = (e) => {
+    console.log('Create New User')
+    e.preventDefault()
+    createUser(user, dispatch)
+  }
+
+  console.log(user)
+
   return (
     <Container>
-      <div onClick={handleBack} className='back-btn hover:translate-x-2'>
+      <div onClick={handleBack} className='back-btn '>
         <ArrowBackIos className='icons' /> Back
       </div>
       <InnerContainer>
@@ -23,52 +81,63 @@ const NewUser = () => {
         <form className='new-user-form'>
           <ItemContainer>
             <label>Username</label>
-            <input type='text' placeholder='john' />
-          </ItemContainer>
-          <ItemContainer>
-            <label>Full Name</label>
-            <input type='text' placeholder='John Smitch' />
+            <input
+              onChange={handleChange}
+              type='text'
+              placeholder='John Smitch'
+              name='username'
+            />
           </ItemContainer>
           <ItemContainer>
             <label>Email</label>
-            <input type='text' placeholder='john@example.com' />
+            <input
+              onChange={handleChange}
+              type='text'
+              placeholder='john@example.com'
+              name='email'
+            />
           </ItemContainer>
           <ItemContainer>
             <label>Password</label>
-            <input type='password' placeholder='Atleast 6 Character' />
-          </ItemContainer>
-          <ItemContainer>
-            <label>Phone Number</label>
-            <input type='text' placeholder='+60 11 1111 1111' />
-          </ItemContainer>
-          <ItemContainer>
-            <label>Address</label>
-            <input type='text' placeholder='New York | USA' />
+            <input
+              onChange={handleChange}
+              type='password'
+              placeholder='Atleast 6 Character'
+              name='password'
+            />
           </ItemContainer>
           <ItemContainer>
             <label>Image</label>
-            <input type='file' />
+            <input
+              onChange={(e) => setProfilePic(e.target.files[0])}
+              className='file-input'
+              type='file'
+              name='profilePic'
+            />
           </ItemContainer>
           <ItemContainer>
-            <label>Gender</label>
-            <div className='gender-container'>
-              <input type='radio' name='gender' id='male' value='male' />
-              <label for='male'>Male</label>
-              <input type='radio' name='gender' id='female' value='female' />
-              <label for='female'>Female</label>
-              <input type='radio' name='gender' id='other' value='other' />
-              <label for='other'>Other</label>
-            </div>
-          </ItemContainer>
-          <ItemContainer>
-            <label>Active</label>
-            <select className='select' name='active' id='active'>
-              <option value='yes'>Yes</option>
-              <option value='no'>No</option>
+            <label>Is Admin</label>
+            <select
+              onChange={handleChange}
+              className='select'
+              name='isAdmin'
+              id='isAdmin'
+            >
+              <option value=''>Type</option>
+              <option value='true'>Yes</option>
+              <option value='false'>No</option>
             </select>
           </ItemContainer>
         </form>
-        <button className='btn-create'>Create</button>
+        {uploaded === 1 ? (
+          <button onClick={handleCreate} className='btn-create'>
+            Create
+          </button>
+        ) : (
+          <button onClick={(e) => handleUpload(e)} className='btn-create'>
+            Upload
+          </button>
+        )}
       </InnerContainer>
     </Container>
   )
@@ -101,19 +170,23 @@ const Container = styled.div`
         text-center
         rounded-sm
         cursor-pointer
-        transition-all
+    `}
+
+    .icons {
+      ${tw`
+        transition
         duration-200
         ease-in-out
-    `}
+      `}
+    }
 
     &:hover {
       ${tw`
         bg-gray-200
       `}
-
       .icons {
         ${tw`
-            -ml-3
+          -translate-x-2
         `}
       }
     }
@@ -193,6 +266,12 @@ const ItemContainer = styled.div`
         border-gray-200
         rounded-md
         focus:outline-none
+    `}
+  }
+
+  .file-input {
+    ${tw`
+      py-[1px]
     `}
   }
 

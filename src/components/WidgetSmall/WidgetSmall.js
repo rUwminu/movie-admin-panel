@@ -1,89 +1,58 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import tw from 'twin.macro'
 import styled from 'styled-components'
+import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 import { Visibility } from '@material-ui/icons'
 
 const WidgetSmall = () => {
+  const [newUsers, setNewUsers] = useState([])
+
+  const baseUrl = 'https://full-stack-api-netflix-app.herokuapp.com/api'
+
+  const getNewuser = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/user?new=true`, {
+        headers: {
+          token: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token,
+        },
+      })
+      setNewUsers(res.data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  useEffect(() => {
+    getNewuser()
+  }, [])
+
   return (
     <Container>
       <h1 className='title'>New Join Members</h1>
       <ul className='list'>
-        <li className='item-list'>
-          <img
-            src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
-            alt=''
-            className='item-img'
-          />
-          <div className='user'>
-            <span className='user-name'>John Doe</span>
-            <span className='user-job'>Software Engineer</span>
-          </div>
-          <button className='btn'>
-            <Visibility className='icon' />
-            Display
-          </button>
-        </li>
-        <li className='item-list'>
-          <img
-            src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
-            alt=''
-            className='item-img'
-          />
-          <div className='user'>
-            <span className='user-name'>John Doe</span>
-            <span className='user-job'>Software Engineer</span>
-          </div>
-          <button className='btn'>
-            <Visibility className='icon' />
-            Display
-          </button>
-        </li>
-        <li className='item-list'>
-          <img
-            src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
-            alt=''
-            className='item-img'
-          />
-          <div className='user'>
-            <span className='user-name'>John Doe</span>
-            <span className='user-job'>Software Engineer</span>
-          </div>
-          <button className='btn'>
-            <Visibility className='icon' />
-            Display
-          </button>
-        </li>
-        <li className='item-list'>
-          <img
-            src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
-            alt=''
-            className='item-img'
-          />
-          <div className='user'>
-            <span className='user-name'>John Doe</span>
-            <span className='user-job'>Software Engineer</span>
-          </div>
-          <button className='btn'>
-            <Visibility className='icon' />
-            Display
-          </button>
-        </li>
-        <li className='item-list'>
-          <img
-            src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
-            alt=''
-            className='item-img'
-          />
-          <div className='user'>
-            <span className='user-name'>John Doe</span>
-            <span className='user-job'>Software Engineer</span>
-          </div>
-          <button className='btn'>
-            <Visibility className='icon' />
-            Display
-          </button>
-        </li>
+        {newUsers &&
+          newUsers.map((user) => (
+            <li className='item-list' key={user._id}>
+              <img
+                src={
+                  user.profilePic ||
+                  'https://pbs.twimg.com/media/D8tCa48VsAA4lxn.jpg'
+                }
+                alt=''
+                className='item-img'
+              />
+              <div className='user'>
+                <span className='user-name'>{user.username}</span>
+                <span className='user-job'>Software Engineer</span>
+              </div>
+              <Link to={`/user/${user._id}`} className='btn'>
+                <Visibility className='icon' />
+                Display
+              </Link>
+            </li>
+          ))}
       </ul>
     </Container>
   )

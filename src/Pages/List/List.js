@@ -1,137 +1,82 @@
 import React, { useContext, useState, useEffect } from 'react'
 import tw from 'twin.macro'
 import styled from 'styled-components'
-import { Link, useLocation, useParams } from 'react-router-dom'
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import storage from '../../firebase'
-import { MovieContext } from '../../context/MovieContext/MovieContext'
+import { Link, useLocation, useParams, useHistory } from 'react-router-dom'
+import { ListContext } from '../../context/ListContext/ListContext'
+
 import { updateMovies } from '../../context/MovieContext/ApiCall'
 
-import { Publish } from '@material-ui/icons'
+import { ArrowBackIos } from '@material-ui/icons'
 
-const Product = () => {
+const List = () => {
+  const history = useHistory()
   const { id } = useParams()
   const location = useLocation()
-  const { dispatch } = useContext(MovieContext)
-  const movie = location.movie
-  const [movieDetail, setMovieDetail] = useState({})
-  const [movieText, setMovieText] = useState(null)
-  const [img, setImg] = useState(null)
-  const [trailer, setTrailer] = useState(null)
-  const [video, setVideo] = useState(null)
-  const [uploaded, setUploaded] = useState(0)
+  const { dispatch } = useContext(ListContext)
+  const list = location.list
+  const [listDetail, setListDetail] = useState({})
+  const [listText, setListText] = useState({})
 
-  const { movies, isFetching } = useContext(MovieContext)
+  const { lists, isFetching } = useContext(ListContext)
 
-  const findMovieDetail = () => {
-    if (movies && !isFetching) {
-      const movieObject = movies.find((x) => x._id === id)
-      setMovieDetail(movieObject)
+  const findListDetail = () => {
+    if (lists.length > 0 && !isFetching) {
+      const listObject = lists.find((x) => x._id === id)
+      setListDetail(listObject)
+    } else {
+      history.push('/lists')
     }
   }
 
   const handleChange = (e) => {
     const value = e.target.value
-    setMovieText({ ...movieText, [e.target.name]: value, id })
-  }
-
-  const uploadAllFile = (items) => {
-    items.forEach((item) => {
-      const fileName = new Date().getTime() + item.label + item.file.name
-      const storageRef = ref(storage, `/items/${fileName}`)
-      const uploadTask = uploadBytesResumable(storageRef, item.file)
-
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          console.log('Upload is ' + progress + '% done')
-        },
-        (error) => {
-          console.log(error)
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            setMovieText((prev) => {
-              return { ...prev, [item.label]: url }
-            })
-            setUploaded((prev) => prev + 1)
-          })
-        }
-      )
+    setListText({
+      ...listText,
+      [e.target.name]: value ? value : e.target.placeholder,
+      id,
     })
   }
 
-  const handleUpdate = (e) => {
-    console.log('Update Movie')
-    e.preventDefault()
-    updateMovies(movieText, dispatch)
-  }
+  const handleUpdate = (e) => {}
 
-  const handleUpload = (e) => {
-    e.preventDefault()
-
-    if (img && trailer && video) {
-      uploadAllFile([
-        { file: img, label: 'img' },
-        { file: trailer, label: 'trailer' },
-        { file: video, label: 'video' },
-      ])
-    } else if (!img || img === null) {
-      uploadAllFile([
-        { file: trailer, label: 'trailer' },
-        { file: video, label: 'video' },
-      ])
-    } else if (!video || video === null) {
-      uploadAllFile([
-        { file: img, label: 'img' },
-        { file: video, label: 'video' },
-      ])
-    } else if (!trailer || trailer === null) {
-      uploadAllFile([
-        { file: img, label: 'img' },
-        { file: video, label: 'video' },
-      ])
-    }
-  }
+  console.log(listText)
 
   useEffect(() => {
-    findMovieDetail()
+    findListDetail()
   }, [id])
+
+  const handleBack = () => {
+    history.goBack()
+  }
 
   return (
     <Container>
-      {!isFetching && movieDetail && (
+      <div onClick={handleBack} className='back-btn '>
+        <ArrowBackIos className='icons' /> Back
+      </div>
+      {!isFetching && listDetail && (
         <>
           <TitleContainer>
             <h1>Movie</h1>
-            <Link to='/newMovie' className='add-btn'>
+            <Link to='/newList' className='add-btn'>
               Create
             </Link>
           </TitleContainer>
           <ProductTopContainer>
             <div className='top-right'>
-              <div className='product-info-top'>
-                <img src={movieDetail.img} alt='' />
-                <h1>{movieDetail.title}</h1>
-              </div>
+              <p>{listDetail.title}</p>
               <div className='product-info-bottom'>
                 <div className='product-info-item'>
                   <h2>Id: </h2>
-                  <p>{movieDetail._id}</p>
+                  <p>{listDetail._id}</p>
                 </div>
                 <div className='product-info-item'>
                   <h2>Genre: </h2>
-                  <p>{movieDetail.genre}</p>
+                  <p>{listDetail.genre}</p>
                 </div>
                 <div className='product-info-item'>
-                  <h2>Year: </h2>
-                  <p>{movieDetail.year}</p>
-                </div>
-                <div className='product-info-item'>
-                  <h2>Limit: </h2>
-                  <p>{movieDetail.limit}</p>
+                  <h2>Type: </h2>
+                  <p>{listDetail.type}</p>
                 </div>
               </div>
             </div>
@@ -144,16 +89,7 @@ const Product = () => {
                   onChange={handleChange}
                   type='text'
                   name='title'
-                  placeholder={movieDetail.title}
-                />
-              </div>
-              <div className='product-item-box'>
-                <label>Year</label>
-                <input
-                  onChange={handleChange}
-                  type='text'
-                  name='year'
-                  placeholder={movieDetail.year}
+                  placeholder={listDetail.title}
                 />
               </div>
               <div className='product-item-box'>
@@ -162,57 +98,20 @@ const Product = () => {
                   onChange={handleChange}
                   type='text'
                   name='genre'
-                  placeholder={movieDetail.genre}
+                  placeholder={listDetail.genre}
                 />
               </div>
               <div className='product-item-box'>
-                <label>Trailer</label>
-                <input
-                  onChange={(e) => setTrailer(e.target.files[0])}
-                  type='file'
-                  name='trailer'
-                />
-              </div>
-              <div className='product-item-box'>
-                <label>Video</label>
-                <input
-                  onChange={(e) => setVideo(e.target.files[0])}
-                  type='file'
-                  name='video'
-                />
-              </div>
-              <div className='product-item-box'>
-                <label>Is Series</label>
-                <select onChange={handleChange} name='isSeries' id='isSeries'>
-                  <option value='true'>Yes</option>
-                  <option value='false'>No</option>
+                <label>Type</label>
+                <select onChange={handleChange} name='type' id='isSeries'>
+                  <option value=''>Type</option>
+                  <option value='series'>Series</option>
+                  <option value='movie'>Movies</option>
                 </select>
               </div>
             </div>
             <div className='product-form-right'>
-              <div className='product-upload'>
-                <img src={movieDetail.img} alt='' />
-                <label for='file'>
-                  <Publish className='upload-icons'/>
-                </label>
-                <input name='img' type='file' id='file' className='hidden' />
-              </div>
-              {img || video || trailer ? (
-                <>
-                  {uploaded >= 1 ? (
-                    <button onClick={handleUpdate} className='update-btn'>
-                      Update
-                    </button>
-                  ) : (
-                    <button
-                      onClick={(e) => handleUpload(e)}
-                      className='update-btn'
-                    >
-                      Upload
-                    </button>
-                  )}
-                </>
-              ) : (
+              {Object.keys(listText).length > 0 && (
                 <button onClick={handleUpdate} className='update-btn'>
                   Update
                 </button>
@@ -239,6 +138,39 @@ const Container = styled.div`
     overflow-y-auto
     scrollbar-hide
   `}
+
+  .back-btn {
+    ${tw`
+        flex
+        items-center
+        justify-center
+        px-2
+        py-2
+        mb-4
+        w-28
+        text-center
+        rounded-sm
+        cursor-pointer
+    `}
+
+    .icons {
+      ${tw`
+        transition
+        duration-200
+        ease-in-out
+      `}
+    }
+
+    &:hover {
+      ${tw`
+        bg-gray-200
+      `}
+      .icons {
+        ${tw`
+          -translate-x-2
+        `}
+      }
+    }
 `
 
 const TitleContainer = styled.div`
@@ -482,4 +414,4 @@ const ProductBottomContainer = styled.div`
   }
 `
 
-export default Product
+export default List

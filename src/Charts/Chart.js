@@ -15,7 +15,7 @@ const Chart = ({ title, data, dataKey, grid }) => {
   return (
     <Container>
       <h3 className='title'>{title}</h3>
-      <ResponsiveContainer width={'100%'} height={'100%'} aspect={4 / 1}>
+      <ResponsiveContainer width='100%' aspect={4 / 1}>
         <LineChart data={data}>
           <XAxis dataKey='name' stroke='#5550bd' />
           <Line type='monotone' dataKey={dataKey} stroke='#5550bd' />

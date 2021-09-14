@@ -3,36 +3,29 @@ import tw from 'twin.macro'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import { DataGrid } from '@material-ui/data-grid'
-import { MovieContext } from '../../context/MovieContext/MovieContext'
-import { getMovies, deleteMovies } from '../../context/MovieContext/ApiCall'
+import { ListContext } from '../../context/ListContext/ListContext'
+import { getList, deleteList } from '../../context/ListContext/ApiCall'
 
 import { DeleteOutline } from '@material-ui/icons'
 
 const ProductList = () => {
-  const { movies, dispatch } = useContext(MovieContext)
+  //const { movies, dispatch } = useContext(MovieContext)
+  const { lists, dispatch } = useContext(ListContext)
 
   useEffect(() => {
-    getMovies(dispatch)
+    getList(dispatch)
   }, [dispatch])
 
   const handleDetele = (id) => {
-    deleteMovies(id, dispatch)
+    deleteList(id, dispatch)
   }
 
   const columns = [
-    { field: '_id', headerName: 'ID', width: 100 },
+    { field: '_id', headerName: 'ID', width: 220 },
     {
-      field: 'name',
-      headerName: 'Movie Name',
+      field: 'title',
+      headerName: 'List Title',
       width: 240,
-      renderCell: (params) => {
-        return (
-          <UserProfile>
-            <img src={params.row.img} alt='' />
-            {params.row.title}
-          </UserProfile>
-        )
-      },
     },
     {
       field: 'genre',
@@ -40,19 +33,9 @@ const ProductList = () => {
       width: 116,
     },
     {
-      field: 'year',
-      headerName: 'Year',
-      width: 105,
-    },
-    {
-      field: 'limit',
-      headerName: 'Limit',
-      width: 108,
-    },
-    {
-      field: 'isSeries',
-      headerName: 'IsSeries',
-      width: 128,
+      field: 'type',
+      headerName: 'Type',
+      width: 120,
     },
     {
       field: 'action',
@@ -62,7 +45,7 @@ const ProductList = () => {
         return (
           <EditButton>
             <Link
-              to={{ pathname: `/movie/${params.row._id}`, movie: params.row }}
+              to={{ pathname: `/list/${params.row._id}`, list: params.row }}
             >
               <button>Edit</button>
             </Link>
@@ -80,14 +63,14 @@ const ProductList = () => {
   return (
     <Container>
       <DataGrid
-        rows={movies}
+        rows={lists}
         columns={columns}
         pageSize={8}
         checkboxSelection
         disableSelectionOnClick
         getRowId={(r) => r._id}
       />
-      <Link to='/newMovie' className='add-btn'>
+      <Link to='/newList' className='add-btn'>
         Create
       </Link>
     </Container>
@@ -150,7 +133,6 @@ const UserProfile = styled.div`
         mr-2
         w-10
         h-10
-        min-w-[2.5rem]
         rounded-full
         object-cover
     `}

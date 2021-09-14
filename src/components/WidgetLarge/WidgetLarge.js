@@ -12,57 +12,59 @@ const WidgetLarge = () => {
       <h1 className='title'>Latest Transaction</h1>
 
       <table className='table'>
-        <tr className='table-row'>
-          <th className='table-col table-title'>Customer</th>
-          <th className='table-col table-title'>Date</th>
-          <th className='table-col table-title'>Amount</th>
-          <th className='table-col table-title'>Status</th>
-        </tr>
-        <tr className='table-row'>
-          <td className='table-col table-user'>
-            <img
-              src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
-              alt='avatar'
-              className='user-img'
-            />
-            <span className='user-name'>John Doe</span>
-          </td>
-          <td className='table-col table-date'>2 Jun 2020</td>
-          <td className='table-col table-amount'>$129.98</td>
-          <td className='table-col table-status'>
-            <Button type='Approved' />
-          </td>
-        </tr>
-        <tr className='table-row'>
-          <td className='table-col table-user'>
-            <img
-              src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
-              alt='avatar'
-              className='user-img'
-            />
-            <span className='user-name'>John Doe</span>
-          </td>
-          <td className='table-col table-date'>2 Jun 2020</td>
-          <td className='table-col table-amount'>$129.98</td>
-          <td className='table-col table-status'>
-            <Button type='Pendding' />
-          </td>
-        </tr>
-        <tr className='table-row'>
-          <td className='table-col table-user'>
-            <img
-              src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
-              alt='avatar'
-              className='user-img'
-            />
-            <span className='user-name'>John Doe</span>
-          </td>
-          <td className='table-col table-date'>2 Jun 2020</td>
-          <td className='table-col table-amount'>$129.98</td>
-          <td className='table-col table-status'>
-            <Button type='Declined' />
-          </td>
-        </tr>
+        <tbody>
+          <tr className='table-row'>
+            <th className='table-col table-title'>Customer</th>
+            <th className='table-col table-title'>Date</th>
+            <th className='table-col table-title'>Amount</th>
+            <th className='table-col table-title'>Status</th>
+          </tr>
+          <tr className='table-row'>
+            <td className='table-col table-user'>
+              <img
+                src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
+                alt='avatar'
+                className='user-img'
+              />
+              <span className='user-name'>John Doe</span>
+            </td>
+            <td className='table-col table-date'>2 Jun 2020</td>
+            <td className='table-col table-amount'>$129.98</td>
+            <td className='table-col table-status'>
+              <Button type='Approved' />
+            </td>
+          </tr>
+          <tr className='table-row'>
+            <td className='table-col table-user'>
+              <img
+                src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
+                alt='avatar'
+                className='user-img'
+              />
+              <span className='user-name'>John Doe</span>
+            </td>
+            <td className='table-col table-date'>2 Jun 2020</td>
+            <td className='table-col table-amount'>$129.98</td>
+            <td className='table-col table-status'>
+              <Button type='Pendding' />
+            </td>
+          </tr>
+          <tr className='table-row'>
+            <td className='table-col table-user'>
+              <img
+                src='https://images.pexels.com/photos/3992656/pexels-photo-3992656.png?auto=compress&cs=tinysrgb&dpr=2&w=500'
+                alt='avatar'
+                className='user-img'
+              />
+              <span className='user-name'>John Doe</span>
+            </td>
+            <td className='table-col table-date'>2 Jun 2020</td>
+            <td className='table-col table-amount'>$129.98</td>
+            <td className='table-col table-status'>
+              <Button type='Declined' />
+            </td>
+          </tr>
+        </tbody>
       </table>
     </Container>
   )

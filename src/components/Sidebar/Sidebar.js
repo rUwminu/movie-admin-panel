@@ -9,14 +9,14 @@ import {
   Timeline,
   TrendingUp,
   PersonOutline,
-  Storefront,
-  AttachMoney,
   MailOutline,
   MessageOutlined,
   Report,
   AssessmentOutlined,
   FeedbackOutlined,
   WorkOutlineOutlined,
+  PlayArrow,
+  ViewList
 } from '@material-ui/icons'
 
 const Sidebar = () => {
@@ -32,7 +32,7 @@ const Sidebar = () => {
         <MenuContainer>
           <h3 className='title-list'>Dashboard</h3>
           <ul className='menu-list'>
-            <Link to='/'>
+            <Link to='/movie-admin-panel'>
               <li
                 onClick={(e) => handleItemClick(e)}
                 className={`menu-list-item ${isActive === 'Home' && 'active'}`}
@@ -71,26 +71,26 @@ const Sidebar = () => {
                 <span className='item-tag'>Users</span>
               </li>
             </Link>
-            <Link to='/products'>
+            <Link to='/movies'>
               <li
                 onClick={(e) => handleItemClick(e)}
                 className={`menu-list-item ${
-                  isActive === 'Products' && 'active'
+                  isActive === 'Movies' && 'active'
                 }`}
               >
-                <Storefront />
-                <span className='item-tag'>Products</span>
+                <PlayArrow />
+                <span className='item-tag'>Movies</span>
               </li>
             </Link>
-            <li
-              onClick={(e) => handleItemClick(e)}
-              className={`menu-list-item ${
-                isActive === 'Tranactions' && 'active'
-              }`}
-            >
-              <AttachMoney />
-              <span className='item-tag'>Tranactions</span>
-            </li>
+            <Link to='/lists'>
+              <li
+                onClick={(e) => handleItemClick(e)}
+                className={`menu-list-item ${isActive === 'List' && 'active'}`}
+              >
+                <ViewList />
+                <span className='item-tag'>List</span>
+              </li>
+            </Link>
             <li
               onClick={(e) => handleItemClick(e)}
               className={`menu-list-item ${isActive === 'Report' && 'active'}`}

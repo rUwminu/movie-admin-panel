@@ -1,30 +1,36 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import tw from 'twin.macro'
 import styled from 'styled-components'
 import { DataGrid } from '@material-ui/data-grid'
 import { Link } from 'react-router-dom'
+import { UserContext } from '../../context/UserContext/UserContext'
+import { getUsers, deleteUser } from '../../context/UserContext/ApiCall'
 
-import { userRows } from '../../Assets/DumbData'
+//import { userRows } from '../../Assets/DumbData'
 import { DeleteOutline } from '@material-ui/icons'
 
 const UserList = () => {
-  const [userData, setUserData] = useState(userRows)
+  const { users, dispatch } = useContext(UserContext)
 
   const handleDetele = (id) => {
-    const newUserData = userData.filter((user) => user.id !== id)
-    setUserData(newUserData)
+    deleteUser(id, dispatch)
   }
 
+  useEffect(() => {
+    getUsers(dispatch)
+  }, [dispatch])
+
+
   const columns = [
-    { field: 'id', headerName: 'ID', width: 100 },
+    { field: '_id', headerName: 'ID', width: 100 },
     {
-      field: 'user',
+      field: 'name',
       headerName: 'Full name',
       width: 200,
       renderCell: (params) => {
         return (
           <UserProfile>
-            <img src={params.row.avatar} alt='' />
+            <img src={params.row.profilePic} alt='' />
             {params.row.username}
           </UserProfile>
         )
@@ -37,28 +43,18 @@ const UserList = () => {
       width: 180,
     },
     {
-      field: 'status',
-      headerName: 'Status',
-      width: 120,
-    },
-    {
-      field: 'transaction',
-      headerName: 'Transaction',
-      width: 160,
-    },
-    {
       field: 'action',
       headerName: 'Action',
       width: 150,
       renderCell: (params) => {
         return (
           <EditButton>
-            <Link to={`/user/${params.row.id}`}>
+            <Link to={`/user/${params.row._id}`}>
               <button>Edit</button>
             </Link>
 
             <DeleteOutline
-              onClick={() => handleDetele(params.row.id)}
+              onClick={() => handleDetele(params.row._id)}
               className='delete-icons'
             />
           </EditButton>
@@ -69,14 +65,19 @@ const UserList = () => {
 
   return (
     <Container>
-      <DataGrid
-        rows={userData}
-        columns={columns}
-        disableSelectionOnClick
-        pageSize={8}
-        checkboxSelection
-        disableSelectionOnClick
-      />
+      {users && (
+        <DataGrid
+          rows={users}
+          columns={columns}
+          disableSelectionOnClick
+          pageSize={8}
+          checkboxSelection
+          getRowId={(r) => r._id}
+        />
+      )}
+      <Link to='/newUser' className='add-btn'>
+        Create
+      </Link>
     </Container>
   )
 }
@@ -85,15 +86,44 @@ const Container = styled.div`
   ${tw`
     mx-auto
     pt-28
+    pb-20
     px-4
     xl:px-0
     w-full
     max-w-5xl
+    flex
+    flex-col
     flex-grow
+    justify-end
     overflow-hidden
     overflow-y-auto
     scrollbar-hide
   `}
+
+  .add-btn {
+    ${tw`
+        w-48
+        mt-4
+        ml-auto
+        py-[6px]
+        px-5
+        text-center
+        text-white
+        bg-green-600
+        rounded-md
+        cursor-pointer
+        transition
+        duration-200
+        ease-in-out
+    `}
+
+    :hover {
+      ${tw`
+        text-black
+        bg-green-400
+      `}
+    }
+  }
 `
 
 const UserProfile = styled.div`
