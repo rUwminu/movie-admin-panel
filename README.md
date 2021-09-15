@@ -9,7 +9,7 @@
 <h3>Password</h3>
 <p>123456</p>
 
-<h1>Current Pages Available</h1>
+<h2>Current Pages Available</h2>
 <ul>
   <li>Home page</li>
   <li>Movie page</li>
