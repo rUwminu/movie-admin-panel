@@ -8,7 +8,7 @@
 <p>And this admin panel is made to able to be customizable for different wep app need. Currently this admin panel is customized to fit movie web app of my netflix clone</p>
 <p>There a non-backend version of admin panel in my repo, feel free to check it out. repo name 'admin-panel-app'</p>
 
-<h2>Admin Account & Pawword</h1>
+<h2>Admin Account & Password</h1>
 <h3>Email</h3>
 <p>admin@email.com</p>
 <h3>Password</h3>
